@@ -6,12 +6,31 @@
 // image_picker: ^1.0.0
 // http: ^0.13.6
 // cached_network_image: ^3.3.0
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Image Gallery App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const ImageGallery(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 
 class ImageGallery extends StatefulWidget {
   const ImageGallery({super.key});
@@ -30,7 +49,7 @@ class _ImageGalleryState extends State<ImageGallery> {
   }
 
   Future<List<String>> fetchImages() async {
-    const String apiUrl = 'https://picsum.photos/v2/list?page=1&limit=20';
+    const String apiUrl = 'https://picsum.photos/v2/list?page=2&limit=20';
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {

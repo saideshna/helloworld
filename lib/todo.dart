@@ -1,79 +1,78 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const TodoApp());
+  runApp(TodoApp());
 }
 
 class TodoApp extends StatelessWidget {
-  const TodoApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'Flutter Todo CRUD',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: TodoHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class TodoHomePage extends StatefulWidget {
-  const TodoHomePage({super.key});
-
   @override
-  State<TodoHomePage> createState() => _TodoHomePageState();
+  _TodoHomePageState createState() => _TodoHomePageState();
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
-  final TextEditingController _taskController = TextEditingController();
-  final List<String> _tasks = [];
+  List<String> _todoList = [];
+  TextEditingController _controller = TextEditingController();
 
-  void _addTask() {
-    String newTask = _taskController.text.trim();
-    if (newTask.isNotEmpty) {
+  void _addTodo() {
+    if (_controller.text.trim().isNotEmpty) {
       setState(() {
-        _tasks.add(newTask);
-        _taskController.clear();
+        _todoList.add(_controller.text.trim());
+        _controller.clear();
       });
     }
   }
 
-  void _editTask(int index) {
-    _taskController.text = _tasks[index];
+  void _editTodo(int index) {
+    _controller.text = _todoList[index];
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Edit Task"),
+        title: Text("Edit Todo"),
         content: TextField(
-          controller: _taskController,
+          controller: _controller,
           autofocus: true,
-          decoration: const InputDecoration(hintText: "Update your task"),
+          decoration: InputDecoration(hintText: 'Enter updated todo'),
         ),
         actions: [
           TextButton(
             onPressed: () {
               setState(() {
-                _tasks[index] = _taskController.text.trim();
-                _taskController.clear();
+                _todoList[index] = _controller.text.trim();
+                _controller.clear();
               });
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
-            child: const Text("Save"),
+            child: Text("Update"),
           ),
           TextButton(
             onPressed: () {
-              _taskController.clear();
-              Navigator.pop(context);
+              _controller.clear();
+              Navigator.of(context).pop();
             },
-            child: const Text("Cancel"),
+            child: Text("Cancel"),
           ),
         ],
       ),
     );
   }
 
-  void _deleteTask(int index) {
+  void _deleteTodo(int index) {
     setState(() {
-      _tasks.removeAt(index);
+      _todoList.removeAt(index);
     });
   }
 
@@ -81,50 +80,55 @@ class _TodoHomePageState extends State<TodoHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("To-Do App"),
+        title: Text("Todo CRUD App"),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Add Todo
             Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _taskController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter a new task",
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Enter a todo",
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: _addTask,
-                  icon: const Icon(Icons.add),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _addTodo,
+                  child: Text("Add"),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 20),
+            // Todo List
             Expanded(
-              child: _tasks.isEmpty
-                  ? const Center(child: Text("No tasks added yet."))
+              child: _todoList.isEmpty
+                  ? Center(child: Text("No todos yet."))
                   : ListView.builder(
-                itemCount: _tasks.length,
+                itemCount: _todoList.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_tasks[index]),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _editTask(index),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deleteTask(index),
-                        ),
-                      ],
+                  return Card(
+                    child: ListTile(
+                      title: Text(_todoList[index]),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Colors.orange),
+                            onPressed: () => _editTodo(index),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteTodo(index),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
